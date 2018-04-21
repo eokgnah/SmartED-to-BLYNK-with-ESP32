@@ -1,7 +1,7 @@
 # SmartED-to-BLYNK-with-ESP32
 SmartED CAN-BUS Data Sniffer and Sender to Blynk Server over ESP32 WIFI 
 
-<img src=https://github.com/eokgnah/SmartED-to-BLYNK-with-ESP32/blob/master/SmartED-Blynk.jpg>
+<img src="https://github.com/eokgnah/SmartED-to-BLYNK-with-ESP32/blob/master/SmartED-Blynk.jpg" width="350"><img src="https://github.com/eokgnah/SmartED-to-BLYNK-with-ESP32/blob/master/SmartED-ESP32.jpg" width="350">
 
 Pin Usage
 
