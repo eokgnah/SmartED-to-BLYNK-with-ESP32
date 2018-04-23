@@ -39,6 +39,7 @@ char ssid[] = "Mobile-WIFI-Hotspot";
 char pass[] = "SuperSecurePass";
 
 
+float               SPEED = 0;             // Speed
 long unsigned int   KILOMETERSTAND = 0;    // km
 unsigned int        RESTREICHWEITE = 0;    // km
 unsigned int        POWERLEVEL = 0;        // 33, 66, 99
@@ -51,6 +52,7 @@ float               ECOall = 0;            // ECO-Wert
 float               ECObre = 0;            // ECO-Wert Bremsen
 float               ECOrol = 0;            // ECO-Wert Rollen
 float               ECOacc = 0;            // ECO-Wert Beschleunigen
+float               TEMPERATUR = 0;        // TEMPERATUR
 
 int INTERVALL = 10;    // alle n Sek Werte per MQTT übertragen
 int TIMER = millis() - 1000 * INTERVALL/2;
@@ -87,6 +89,11 @@ void loop()
 
       switch (rxId) {
         
+      case (0x200):
+      SPEED = ((rxBuf[2] * 0xFF) + (rxBuf[3])) / 18;
+      if ( DEBUG ) { Serial.print("Speed               - "); Serial.print(SPEED); Serial.print("   "); }
+      break;
+
       case (0x412):
       KILOMETERSTAND = (rxBuf[2] * 0xFFFF) + (rxBuf[3] * 0xFF) + rxBuf[4];
       if ( DEBUG ) { Serial.print("Kilometerstand      - "); Serial.print(KILOMETERSTAND); Serial.print("   "); }
@@ -108,7 +115,7 @@ void loop()
       
       case (0x448):
       if ( rxBuf[0] == 0x0F ){
-      HVV = (rxBuf[6] * 0xFF + rxBuf[7])*0.1;
+      HVV = (rxBuf[6] * 0xFF + rxBuf[7]) * 0.1;
       if ( DEBUG ) { Serial.print("HV Spannung         - "); Serial.print(HVP); Serial.print("   "); Serial.print(HVV); Serial.print("   "); }
       } else {
       if ( DEBUG ) { Serial.print("HV Spannung         - "); Serial.print("ungültiger Wert"); Serial.print("   "); }
@@ -126,8 +133,13 @@ void loop()
       break;
       
       case (0x2D5):
-      rSOC = ((rxBuf[4] & 0x0F) * 0xFF + rxBuf[5])*0.1;      
+      rSOC = ((rxBuf[4] & 0x0F) * 0xFF + rxBuf[5]) * 0.1;      
       if ( DEBUG ) { Serial.print("realSOC             - "); Serial.print(rSOC); Serial.print("   "); }
+      break;
+
+      case (0x408):
+      TEMPERATUR = ((rxBuf[4] - 50 ) - 32 ) / 1.8;      
+      if ( DEBUG ) { Serial.print("TEMPERATUR          - "); Serial.print(TEMPERATUR); Serial.print("   "); }
       break;
 
       }
@@ -157,6 +169,7 @@ void loop()
 
       if ( DEBUG ) {
       Serial.println("Werte werden übertragen");
+      Serial.printf("Speed             : %7.1f km/h\n", SPEED );
       Serial.printf("Kilometerstand    : %7.1u km\n", KILOMETERSTAND );
       Serial.printf("Reichweite        : %7.1u km\n", RESTREICHWEITE );
       Serial.printf("Powerlevel        : %7.1u %%\n", POWERLEVEL );
@@ -169,26 +182,26 @@ void loop()
       Serial.printf("ECO Bremsen       : %7.1f %%\n", ECObre );
       Serial.printf("ECO Rollen        : %7.1f %%\n", ECOrol );
       Serial.printf("ECO Beschleunigen : %7.1f %%\n", ECOacc );
+      Serial.printf("Temperatur        : %7.1f C\n", Temperatur );
       Serial.println("--");
       }
 
-      Blynk.virtualWrite( 0, String(KILOMETERSTAND).c_str());
-      Blynk.virtualWrite( 1, String(RESTREICHWEITE).c_str());
-      Blynk.virtualWrite( 2, String(POWERLEVEL).c_str());
-      Blynk.virtualWrite( 3, String(HVA).c_str());
-      Blynk.virtualWrite( 4, String(HVV).c_str());
-      Blynk.virtualWrite( 5, String(HVP).c_str());
-      Blynk.virtualWrite( 6, String(SOC).c_str());
-      Blynk.virtualWrite( 7, String(rSOC).c_str());
-      Blynk.virtualWrite( 8, String(ECOall).c_str());
-      Blynk.virtualWrite( 9, String(ECObre).c_str());
-      Blynk.virtualWrite(10, String(ECOrol).c_str());
-      Blynk.virtualWrite(11, String(ECOacc).c_str());
-    
+      Blynk.virtualWrite( 0, String(SPEED).c_str());
+      Blynk.virtualWrite( 1, String(KILOMETERSTAND).c_str());
+      Blynk.virtualWrite( 2, String(RESTREICHWEITE).c_str());
+      Blynk.virtualWrite( 3, String(POWERLEVEL).c_str());
+      Blynk.virtualWrite( 4, String(HVA).c_str());
+      Blynk.virtualWrite( 5, String(HVV).c_str());
+      Blynk.virtualWrite( 6, String(HVP).c_str());
+      Blynk.virtualWrite( 7, String(SOC).c_str());
+      Blynk.virtualWrite( 8, String(rSOC).c_str());
+      Blynk.virtualWrite( 9, String(ECOall).c_str());
+      Blynk.virtualWrite(10, String(ECObre).c_str());
+      Blynk.virtualWrite(11, String(ECOrol).c_str());
+      Blynk.virtualWrite(12, String(ECOacc).c_str());
+      Blynk.virtualWrite(13, String(TEMPERATUR).c_str());
+	  
       TIMER = millis();
      }
    
 }
-
-
-
